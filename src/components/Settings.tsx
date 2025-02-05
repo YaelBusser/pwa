@@ -19,18 +19,23 @@ const Settings = () => {
                 console.log("WebOTP en attente...");
                 const abortController = new AbortController();
                 const credential = await (navigator as any).credentials.get({
-                    otp: {transport: ['sms']},
+                    otp: { transport: ['sms'] },
                     signal: abortController.signal
                 });
                 console.log("Code reçu :", credential.code);
                 setOtp(credential.code);
-            } catch (err) {
-                console.error("Erreur WebOTP :", err);
+            } catch (err: any) {
+                if (err.name === 'AbortError') {
+                    console.warn("L'appel WebOTP a été annulé.");
+                } else {
+                    console.error("Erreur WebOTP :", err);
+                }
             }
         } else {
             console.warn("WebOTP API non supportée sur ce navigateur.");
         }
     };
+
 
 
     return (
