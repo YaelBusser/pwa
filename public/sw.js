@@ -8,9 +8,7 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE);
-        })
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
     );
 });
 
@@ -31,10 +29,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
-            if (response) {
-                return response;
-            }
-            return fetch(event.request).catch((error) => {
+            return response || fetch(event.request).catch((error) => {
                 console.error('Failed to fetch:', event.request, error);
                 throw error;
             });
@@ -44,18 +39,8 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener("message", (event) => {
     if (event.data && event.data.type === "VIBRATE") {
-        if (self.navigator.vibrate) {
-            self.navigator.vibrate(200);
-        }
-    } else if (event.data && event.data.type === "START_WEBOTP") {
-        if ("OTPCredential" in window) {
-            navigator.credentials.get({ otp: { transport: ["sms"] } })
-                .then((credential) => {
-                    self.clients.matchAll().then((clients) => {
-                        clients.forEach(client => client.postMessage({ type: "OTP_RECEIVED", otp: credential.code }));
-                    });
-                })
-                .catch((err) => console.error("Erreur WebOTP :", err));
-        }
+        self.clients.matchAll().then((clients) => {
+            clients.forEach(client => client.postMessage({ type: "VIBRATE_CLIENT", duration: event.data.duration }));
+        });
     }
 });

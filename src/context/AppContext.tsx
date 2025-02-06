@@ -40,6 +40,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             });
         }
 
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener("message", (event) => {
+                if (event.data && event.data.type === "VIBRATE_CLIENT") {
+                    navigator.vibrate(event.data.duration);
+                }
+            });
+        }
+
         startWebOTPListener();
     }, []);
 
@@ -60,7 +68,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const testVibration = () => {
-        if (navigator.vibrate) {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: "VIBRATE", duration: 500 });
+        } else {
             navigator.vibrate(500);
         }
     };
