@@ -1,52 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { Battery, Phone, Vibrate, MessageSquare } from "lucide-react";
 
 const Settings = () => {
-    const { batteryLevel, isVibrationEnabled, toggleVibration } = useApp();
+    const { batteryLevel, isVibrationEnabled, toggleVibration, startWebOTPListener } = useApp();
     const [phoneNumber, setPhoneNumber] = useState("");
     const [otp, setOtp] = useState("");
-    const [isListening, setIsListening] = useState(false);
 
     const handleCall = () => {
         if (phoneNumber) {
             window.location.href = `tel:${phoneNumber}`;
         }
     };
-
-    const startWebOTPListener = () => {
-        if (!("OTPCredential" in window) || isListening) return;
-
-        setIsListening(true);
-        const abortController = new AbortController();
-
-        (navigator as any).credentials.get({
-            otp: { transport: ["sms"] },
-            signal: abortController.signal
-        })
-            .then((credential: any) => {
-                console.log("Code OTP reçu :", credential.code);
-                setOtp(credential.code);
-            })
-            .catch((err: any) => {
-                if (err.name === "AbortError") {
-                    console.warn("L'écoute WebOTP a été annulée.");
-                } else {
-                    console.error("Erreur WebOTP :", err);
-                }
-            })
-            .finally(() => {
-                setIsListening(false);
-                setTimeout(startWebOTPListener, 5000); // 🔄 Redémarrer après 5s
-            });
-
-        return () => abortController.abort(); // Nettoyage
-    };
-
-    useEffect(() => {
-        startWebOTPListener();
-        return () => setIsListening(false); // Arrêter proprement à la fermeture
-    }, []);
 
     return (
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 space-y-6">
@@ -67,9 +32,7 @@ const Settings = () => {
                 </div>
                 <button
                     onClick={toggleVibration}
-                    className={`px-4 py-2 rounded-full ${
-                        isVibrationEnabled ? "bg-blue-600 text-white" : "bg-gray-200"
-                    }`}
+                    className={`px-4 py-2 rounded-full ${isVibrationEnabled ? "bg-blue-600 text-white" : "bg-gray-200"}`}
                 >
                     {isVibrationEnabled ? "Activé" : "Désactivé"}
                 </button>
@@ -110,6 +73,12 @@ const Settings = () => {
                     className="flex-1 px-4 py-2 border rounded-lg"
                     autoComplete="one-time-code"
                 />
+                <button
+                    onClick={startWebOTPListener}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                >
+                    Démarrer WebOTP
+                </button>
             </div>
         </div>
     );

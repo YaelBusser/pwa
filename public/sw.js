@@ -41,3 +41,21 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+self.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "VIBRATE") {
+        if (self.navigator.vibrate) {
+            self.navigator.vibrate(200);
+        }
+    } else if (event.data && event.data.type === "START_WEBOTP") {
+        if ("OTPCredential" in window) {
+            navigator.credentials.get({ otp: { transport: ["sms"] } })
+                .then((credential) => {
+                    self.clients.matchAll().then((clients) => {
+                        clients.forEach(client => client.postMessage({ type: "OTP_RECEIVED", otp: credential.code }));
+                    });
+                })
+                .catch((err) => console.error("Erreur WebOTP :", err));
+        }
+    }
+});

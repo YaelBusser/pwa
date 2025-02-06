@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AppContextType {
     photos: string[];
@@ -8,14 +8,18 @@ interface AppContextType {
     isVibrationEnabled: boolean;
     toggleVibration: () => void;
     sendNotification: (title: string, body: string) => void;
+    startWebOTPListener: () => void;
+    otp: string;
+    testVibration: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [photos, setPhotos] = useState<string[]>([]);
     const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
     const [isVibrationEnabled, setIsVibrationEnabled] = useState(true);
+    const [otp, setOtp] = useState("");
 
     useEffect(() => {
         const savedPhotos = localStorage.getItem('photos');
@@ -35,6 +39,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({children})
                 });
             });
         }
+
+        startWebOTPListener();
     }, []);
 
     const addPhoto = (photo: string) => {
@@ -51,40 +57,48 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({children})
 
     const toggleVibration = () => {
         setIsVibrationEnabled(!isVibrationEnabled);
-        console.log("ok")
     };
-    const sendNotification = (title: string, body: string) => {
-        /*
-        if (Notification.permission === "granted") {
-            navigator.serviceWorker.ready.then(function (registration) {
-                registration.showNotification(body, {
-                    body: body,
-                });
-            });
-        } else {
-            new Notification(body, {
-                body: body,
-                icon: '/icons/icon-192x192.png'
-            });
+
+    const testVibration = () => {
+        if (navigator.vibrate) {
+            navigator.vibrate(500);
         }
-         */
+    };
+
+    const sendNotification = (title: string, body: string) => {
         if (Notification.permission === 'granted') {
             if (isVibrationEnabled && navigator.vibrate) {
                 navigator.vibrate(200);
             }
-            /*
-            new Notification(title, {
-                body,
-                icon: '/icons/icon-192x192.png'
-            });
-             */
-            navigator.serviceWorker.ready.then(function (registration) {
-                registration.showNotification(body, {
-                    body: body,
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.showNotification(title, {
+                    body,
                     icon: '/icons/icon-192x192.png'
                 });
             });
         }
+    };
+
+    const startWebOTPListener = () => {
+        if (!("OTPCredential" in window)) return;
+
+        const abortController = new AbortController();
+
+        (navigator as any).credentials.get({
+            otp: { transport: ["sms"] },
+            signal: abortController.signal
+        })
+            .then((credential: any) => {
+                console.log("Code OTP reçu :", credential.code);
+                setOtp(credential.code);
+            })
+            .catch((err: any) => {
+                if (err.name !== "AbortError") {
+                    console.error("Erreur WebOTP :", err);
+                }
+            });
+
+        return () => abortController.abort();
     };
 
     return (
@@ -95,7 +109,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({children})
             batteryLevel,
             isVibrationEnabled,
             toggleVibration,
-            sendNotification
+            sendNotification,
+            startWebOTPListener,
+            otp,
+            testVibration
         }}>
             {children}
         </AppContext.Provider>
