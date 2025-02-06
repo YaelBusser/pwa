@@ -80,7 +80,6 @@ const Settings = () => {
                     value={otp}
                     placeholder="Code OTP"
                     className="flex-1 px-4 py-2 border rounded-lg"
-                    readOnly
                 />
             </div>
         </div>
