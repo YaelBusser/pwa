@@ -19,7 +19,7 @@ const Settings = () => {
                 console.log("WebOTP en attente...");
                 const abortController = new AbortController();
                 const credential = await (navigator as any).credentials.get({
-                    otp: { transport: ['sms'] },
+                    otp: {transport: ['sms']},
                     signal: abortController.signal
                 });
                 console.log("Code reçu :", credential.code);
@@ -35,8 +35,6 @@ const Settings = () => {
             console.warn("WebOTP API non supportée sur ce navigateur.");
         }
     };
-
-
 
     return (
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 space-y-6">

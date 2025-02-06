@@ -102,7 +102,7 @@ const Camera = () => {
                     onClick={stopCamera}
                     className="px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                 >
-                  Arrêter la caméraeae
+                  Arrêter la caméra
                 </button>
               </>
           )}

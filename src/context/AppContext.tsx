@@ -51,6 +51,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const toggleVibration = () => {
     setIsVibrationEnabled(!isVibrationEnabled);
+    console.log("ok")
   };
 
   const sendNotification = (title: string, body: string) => {
