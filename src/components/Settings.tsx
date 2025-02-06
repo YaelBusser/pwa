@@ -3,9 +3,8 @@ import { useApp } from "../context/AppContext";
 import { Battery, Phone, Vibrate, MessageSquare } from "lucide-react";
 
 const Settings = () => {
-    const { batteryLevel, isVibrationEnabled, toggleVibration, startWebOTPListener } = useApp();
+    const { batteryLevel, isVibrationEnabled, toggleVibration, testVibration, otp } = useApp();
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [otp, setOtp] = useState("");
 
     const handleCall = () => {
         if (phoneNumber) {
@@ -15,6 +14,7 @@ const Settings = () => {
 
     return (
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 space-y-6">
+            {/* Niveau de batterie */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <Battery className="h-6 w-6 text-blue-600 mr-2" />
@@ -25,19 +25,29 @@ const Settings = () => {
                 </span>
             </div>
 
-            <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                    <Vibrate className="h-6 w-6 text-blue-600 mr-2" />
-                    <span>Vibrations</span>
+            {/* Vibrations */}
+            <div className="flex flex-col space-y-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                        <Vibrate className="h-6 w-6 text-blue-600 mr-2" />
+                        <span>Vibrations</span>
+                    </div>
+                    <button
+                        onClick={toggleVibration}
+                        className={`px-4 py-2 rounded-full ${isVibrationEnabled ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                    >
+                        {isVibrationEnabled ? "Activé" : "Désactivé"}
+                    </button>
                 </div>
                 <button
-                    onClick={toggleVibration}
-                    className={`px-4 py-2 rounded-full ${isVibrationEnabled ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                    onClick={testVibration}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
                 >
-                    {isVibrationEnabled ? "Activé" : "Désactivé"}
+                    Tester les vibrations
                 </button>
             </div>
 
+            {/* Appel téléphonique */}
             <div className="space-y-2">
                 <div className="flex items-center">
                     <Phone className="h-6 w-6 text-blue-600 mr-2" />
@@ -63,22 +73,15 @@ const Settings = () => {
             <div className="space-y-2">
                 <div className="flex items-center">
                     <MessageSquare className="h-6 w-6 text-blue-600 mr-2" />
-                    <span>Validation SMS (WebOTP)</span>
+                    <span>Code OTP reçu</span>
                 </div>
                 <input
                     type="text"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
                     placeholder="Code OTP"
                     className="flex-1 px-4 py-2 border rounded-lg"
-                    autoComplete="one-time-code"
+                    readOnly
                 />
-                <button
-                    onClick={startWebOTPListener}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-                >
-                    Démarrer WebOTP
-                </button>
             </div>
         </div>
     );
