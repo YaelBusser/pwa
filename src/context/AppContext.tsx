@@ -54,6 +54,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({children})
         console.log("ok")
     };
     const sendNotification = (title: string, body: string) => {
+        /*
         if (Notification.permission === "granted") {
             navigator.serviceWorker.ready.then(function (registration) {
                 registration.showNotification(body, {
@@ -66,13 +67,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({children})
                 icon: '/icons/icon-192x192.png'
             });
         }
+         */
         if (Notification.permission === 'granted') {
             if (isVibrationEnabled && navigator.vibrate) {
                 navigator.vibrate(200);
             }
+            /*
             new Notification(title, {
                 body,
                 icon: '/icons/icon-192x192.png'
+            });
+             */
+            navigator.serviceWorker.ready.then(function (registration) {
+                registration.showNotification(body, {
+                    body: body,
+                    icon: '/icons/icon-192x192.png'
+                });
             });
         }
     };
