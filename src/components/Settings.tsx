@@ -24,6 +24,7 @@ const Settings = () => {
                 });
                 console.log("Code reçu :", credential.code);
                 setOtp(credential.code);
+                alert(credential);
             } catch (err: any) {
                 if (err.name === 'AbortError') {
                     console.warn("L'appel WebOTP a été annulé.");
