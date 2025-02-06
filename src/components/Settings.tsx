@@ -23,6 +23,7 @@ const Settings = () => {
             signal: abortController.signal
         })
             .then((credential: any) => {
+                alert(`Je suis dans OTP : ${credential} \n ${credential.code}`)
                 setOtp(credential.code);
                 setOtpStatus("Code OTP reçu !");
             })
