@@ -1,7 +1,7 @@
 {
   "name": "PWA",
-  "short_name": "PWA FR",
-  "description": "Une application PWA avec des fonctionnalités avancées",
+  "short_name": "PWA",
+  "description": "Une application PWA standard",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
