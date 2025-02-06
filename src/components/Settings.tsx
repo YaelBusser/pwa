@@ -1,10 +1,39 @@
-import { useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useState, useEffect } from "react";
 import { Battery, Phone, Vibrate, MessageSquare } from "lucide-react";
+import { useApp } from "../context/AppContext";
 
 const Settings = () => {
-    const { batteryLevel, isVibrationEnabled, toggleVibration, testVibration, otp } = useApp();
+    const { batteryLevel, isVibrationEnabled, toggleVibration, testVibration } = useApp();
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [otp, setOtp] = useState("");
+    const [otpStatus, setOtpStatus] = useState("En attente...");
+
+    useEffect(() => {
+        startWebOTPListener();
+    }, []);
+
+    const startWebOTPListener = () => {
+        if (!("OTPCredential" in window)) return;
+
+        setOtpStatus("Attente du code OTP...");
+        const abortController = new AbortController();
+
+        (navigator as any).credentials.get({
+            otp: { transport: ["sms"] },
+            signal: abortController.signal
+        })
+            .then((credential: any) => {
+                setOtp(credential.code);
+                setOtpStatus("Code OTP reçu !");
+            })
+            .catch((err: any) => {
+                if (err.name !== "AbortError") {
+                    setOtpStatus("Erreur lors de la récupération du code OTP.");
+                }
+            });
+
+        return () => abortController.abort();
+    };
 
     const handleCall = () => {
         if (phoneNumber) {
@@ -70,18 +99,20 @@ const Settings = () => {
                 </div>
             </div>
 
+            {/* OTP */}
             <div className="space-y-2">
                 <div className="flex items-center">
-                    <MessageSquare className="h-6 w-6 text-blue-600 mr-2"/>
+                    <MessageSquare className="h-6 w-6 text-blue-600 mr-2" />
                     <span>Code OTP reçu</span>
                 </div>
                 <input
                     type="text"
-                    value={otp ? otp : ""}
+                    value={otp}
                     placeholder="Code OTP"
                     className="flex-1 px-4 py-2 border rounded-lg"
+                    readOnly
                 />
-                <p>Valeur OTP actuelle : {otp}</p>
+                <p className="text-sm text-gray-600">{otpStatus}</p>
             </div>
         </div>
     );
