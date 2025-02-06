@@ -8,6 +8,12 @@ const Settings = () => {
     const [otp, setOtp] = useState("");
     const [isListening, setIsListening] = useState(false);
 
+    const handleCall = () => {
+        if (phoneNumber) {
+            window.location.href = `tel:${phoneNumber}`;
+        }
+    };
+
     const startWebOTPListener = () => {
         if (!("OTPCredential" in window) || isListening) return;
 
