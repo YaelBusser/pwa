@@ -77,7 +77,7 @@ const Settings = () => {
                 </div>
                 <input
                     type="text"
-                    value={otp}
+                    value={otp ? otp : ""}
                     placeholder="Code OTP"
                     className="flex-1 px-4 py-2 border rounded-lg"
                 />
