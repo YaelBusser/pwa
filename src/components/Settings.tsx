@@ -72,7 +72,7 @@ const Settings = () => {
 
             <div className="space-y-2">
                 <div className="flex items-center">
-                    <MessageSquare className="h-6 w-6 text-blue-600 mr-2" />
+                    <MessageSquare className="h-6 w-6 text-blue-600 mr-2"/>
                     <span>Code OTP reçu</span>
                 </div>
                 <input
@@ -81,6 +81,7 @@ const Settings = () => {
                     placeholder="Code OTP"
                     className="flex-1 px-4 py-2 border rounded-lg"
                 />
+                <p>Valeur OTP actuelle : {otp}</p>
             </div>
         </div>
     );
