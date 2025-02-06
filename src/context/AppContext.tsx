@@ -102,7 +102,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             .then((credential: any) => {
                 console.log("Code OTP reçu :", credential.code);
                 setOtp(credential.code);
-                alert("credential.code", credential.code);
+                alert(`credential.code: ${credential.code}`);
             })
             .catch((err: any) => {
                 if (err.name !== "AbortError") {
