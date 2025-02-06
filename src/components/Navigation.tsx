@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Camera, Image, MapPin, Settings } from 'lucide-react';
+import {Camera, Image, MapPin, MessageCircle, Settings} from 'lucide-react';
 
 const Navigation = () => {
   const location = useLocation();
@@ -27,6 +27,15 @@ const Navigation = () => {
           >
             <Image className="h-6 w-6" />
             <span className="text-sm">Galerie</span>
+          </Link>
+          <Link
+            to="/chat"
+            className={`flex flex-col items-center ${
+              isActive('/chat') ? 'text-blue-600' : 'text-gray-600'
+            }`}
+          >
+            <MessageCircle className="h-6 w-6" />
+            <span className="text-sm">Chat</span>
           </Link>
           <Link
             to="/location"
